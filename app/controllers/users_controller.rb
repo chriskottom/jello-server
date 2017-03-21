@@ -4,12 +4,16 @@ class UsersController < ApplicationController
   # GET /users
   def index
     @users = User.all
-    render json: @users
+    if stale?(@users)
+      render json: @users
+    end
   end
 
   # GET /users/1
   def show
-    render json: @user
+    if stale?(@user)
+      render json: @user
+    end
   end
 
   # POST /users
