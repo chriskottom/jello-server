@@ -1,0 +1,49 @@
+# Temporary files
+#
+*~
+\#*\#
+.\#*
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+*.rbc
+/stash/
+/tmp/*
+!/tmp/.keep
+
+
+# Bundler artifacts
+#
+/.bundle/
+/vendor/bundle/
+
+
+# Rails- and application-specific files
+#
+.byebug_history
+/db/*.sqlite3
+/log/*
+!/log/.keep
+
+
+# Testing artifacts and temp files
+#
+/coverage
+/test/reports/
+/test/tmp/
+/test/version_tmp/
+
+
+# Dotenv files
+#
+/.env*
+
+
+# Documentation
+#
+.yardoc
+_yardoc
+doc/
+rdoc/
