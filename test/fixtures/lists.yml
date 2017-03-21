@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  board: one
+  creator: one
+  title: MyString
+  archived: false
+
+two:
+  board: two
+  creator: two
+  title: MyString
+  archived: false

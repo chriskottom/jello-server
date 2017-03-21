@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  list: one
+  creator: one
+  assignee: one
+  title: MyString
+  description: MyText
+  archived: false
+
+two:
+  list: two
+  creator: two
+  assignee: two
+  title: MyString
+  description: MyText
+  archived: false
