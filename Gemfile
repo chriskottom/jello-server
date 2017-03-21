@@ -14,6 +14,7 @@ gem 'thor', '0.19.1'
 gem 'bcrypt', '~> 3.1.7'
 
 gem 'rack-cors'
+gem 'active_model_serializers'
 
 group :development, :test do
   gem 'byebug', platform: :mri
