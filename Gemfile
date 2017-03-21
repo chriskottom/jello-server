@@ -13,6 +13,8 @@ gem 'puma', '~> 3.0'
 gem 'thor', '0.19.1'
 gem 'bcrypt', '~> 3.1.7'
 
+gem 'rack-cors'
+
 group :development, :test do
   gem 'byebug', platform: :mri
   gem 'dotenv-rails'
