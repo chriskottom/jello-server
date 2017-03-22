@@ -1,11 +1,10 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+admin:
+  email: admin@example.com
+  password_digest: <%= BCrypt::Password.create('secret') %>
+  admin: true
 
-one:
-  email: MyString
-  password_digest: MyString
-  admin: false
-
-two:
-  email: MyString
-  password_digest: MyString
-  admin: false
+<% 10.times do |i| %>
+user<%= i %>:
+  email: user<%= i %>@example.com
+  password_digest: <%= BCrypt::Password.create('secret') %>
+<% end %>

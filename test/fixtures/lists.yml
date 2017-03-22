@@ -1,13 +1,11 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  board: one
-  creator: one
-  title: MyString
+active:
+  board: active
+  creator: admin
+  title: Admin List
   archived: false
 
-two:
-  board: two
-  creator: two
-  title: MyString
-  archived: false
+archived:
+  board: archived
+  creator: user
+  title: User List
+  archived: true

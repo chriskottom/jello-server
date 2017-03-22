@@ -2,7 +2,13 @@ require 'test_helper'
 
 class BoardsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @board = boards(:one)
+    @board = boards(:active)
+    @user = users(:admin)
+    @board_attributes = {
+      creator_id: @user.id,
+      title: 'Another Board',
+      archived: false
+    }
   end
 
   test "should get index" do
@@ -12,7 +18,7 @@ class BoardsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create board" do
     assert_difference('Board.count') do
-      post boards_url, params: { board: {  } }, as: :json
+      post boards_url, params: { board: @board_attributes }, as: :json
     end
 
     assert_response 201
@@ -24,7 +30,7 @@ class BoardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update board" do
-    patch board_url(@board), params: { board: {  } }, as: :json
+    patch board_url(@board), params: { board: @board_attributes }, as: :json
     assert_response 200
   end
 

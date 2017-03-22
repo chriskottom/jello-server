@@ -1,17 +1,15 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  list: one
-  creator: one
-  assignee: one
-  title: MyString
-  description: MyText
+active:
+  list: active
+  creator: admin
+  assignee: user
+  title: Card for User
+  description: This is a card assigned to User.
   archived: false
 
-two:
-  list: two
-  creator: two
-  assignee: two
-  title: MyString
-  description: MyText
-  archived: false
+archived:
+  list: archived
+  creator: user
+  assignee: admin
+  title: Card for Admin
+  description: This is a card assigned to Admin.
+  archived: true

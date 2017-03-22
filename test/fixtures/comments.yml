@@ -1,11 +1,9 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+active:
+  card: active
+  creator: admin
+  body: This is a comment by Admin.
 
-one:
-  card: one
-  creator: one
-  body: MyText
-
-two:
-  card: two
-  creator: two
-  body: MyText
+archived:
+  card: archived
+  creator: user
+  body: This is a comment by User.

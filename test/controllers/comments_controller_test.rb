@@ -2,7 +2,14 @@ require 'test_helper'
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @comment = comments(:one)
+    @comment = comments(:active)
+    @card = cards(:active)
+    @user = users(:admin)
+    @comment_attributes = {
+      card_id: @card.id,
+      creator_id: @user.id,
+      body: 'This is a comment.'
+    }
   end
 
   test "should get index" do
@@ -12,7 +19,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create comment" do
     assert_difference('Comment.count') do
-      post comments_url, params: { comment: {  } }, as: :json
+      post comments_url, params: { comment: @comment_attributes }, as: :json
     end
 
     assert_response 201
@@ -24,7 +31,9 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update comment" do
-    patch comment_url(@comment), params: { comment: {  } }, as: :json
+    patch comment_url(@comment),
+          params: { comment: @comment_attributes },
+          as: :json
     assert_response 200
   end
 

@@ -2,7 +2,17 @@ require 'test_helper'
 
 class CardsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @card = cards(:one)
+    @card = cards(:active)
+    @list = lists(:active)
+    @user = users(:admin)
+    @card_attributes = {
+      list_id: @list.id,
+      creator_id: @user.id,
+      assignee_id: @user.id,
+      title: 'Another Card',
+      description: 'This is a card.',
+      archived: false
+    }
   end
 
   test "should get index" do
@@ -12,7 +22,7 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create card" do
     assert_difference('Card.count') do
-      post cards_url, params: { card: {  } }, as: :json
+      post cards_url, params: { card: @card_attributes }, as: :json
     end
 
     assert_response 201
@@ -24,7 +34,7 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update card" do
-    patch card_url(@card), params: { card: {  } }, as: :json
+    patch card_url(@card), params: { card: @card_attributes }, as: :json
     assert_response 200
   end
 

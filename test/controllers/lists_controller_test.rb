@@ -2,7 +2,15 @@ require 'test_helper'
 
 class ListsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @list = lists(:one)
+    @list = lists(:active)
+    @board = boards(:active)
+    @user = users(:admin)
+    @list_attributes = {
+      board_id: @board.id,
+      creator_id: @user.id,
+      title: 'Another List',
+      archived: false
+    }
   end
 
   test "should get index" do
@@ -12,7 +20,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create list" do
     assert_difference('List.count') do
-      post lists_url, params: { list: {  } }, as: :json
+      post lists_url, params: { list: @list_attributes }, as: :json
     end
 
     assert_response 201
@@ -24,7 +32,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update list" do
-    patch list_url(@list), params: { list: {  } }, as: :json
+    patch list_url(@list), params: { list: @list_attributes }, as: :json
     assert_response 200
   end
 
