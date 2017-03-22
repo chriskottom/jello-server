@@ -26,7 +26,42 @@ class UserSerializerTest < ActiveSupport::TestCase
     assert_equal user_boards_url(@user), boards_url[:href]
   end
 
+  test 'includes currently active Boards created by the User' do
+    create_user_boards(3)
+    active_boards = serialized_user[:active_boards]
+    active_ids = active_boards.map { |board| board[:id] }.sort
+
+    assert_equal 4, active_ids.count
+
+    expected_ids = @user.boards.where(archived: false).pluck(:id).sort
+    assert_equal expected_ids, active_ids
+
+    board = active_boards.first
+    assert_equal %i(id links title), board.keys.sort
+  end
+
+  test 'includes archived Boards created by the User' do
+    create_user_boards(5)
+    inactive_boards = serialized_user[:archived_boards]
+    inactive_ids = inactive_boards.map { |board| board[:id] }.sort
+
+    assert_equal 5, inactive_ids.count
+
+    expected_ids = @user.boards.where(archived: true).pluck(:id).sort
+    assert_equal expected_ids, inactive_ids
+
+    board = inactive_boards.first
+    assert_equal %i(id links title), board.keys.sort
+  end
+
   private
+
+  def create_user_boards(count = 5)
+    (1..count).each do |n|
+      @user.boards.create(title: "Active Board #{ n }")
+      @user.boards.create(title: "Inactive Board #{ n }", archived: true)
+    end
+  end
 
   def serialized_user(user = nil)
     user ||= @user
