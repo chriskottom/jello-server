@@ -1,10 +1,11 @@
-class UserSerializer < ActiveModel::Serializer
-  include Rails.application.routes.url_helpers
-
+class UserSerializer < ApplicationSerializer
   attributes :id, :email, :gravatar_url, :admin, :created_at, :updated_at, :links
 
-  def link(rel, href)
-    { rel: rel, href: href }
+  has_many :active_boards, serializer: BoardPreviewSerializer do
+    object.boards.where(archived: false)
+  end
+  has_many :archived_boards, serializer: BoardPreviewSerializer do
+    object.boards.where(archived: true)
   end
 
   def links

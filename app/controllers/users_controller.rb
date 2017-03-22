@@ -5,14 +5,14 @@ class UsersController < ApplicationController
   def index
     @users = User.all
     if stale?(@users)
-      render json: @users
+      render json: @users, include: []
     end
   end
 
   # GET /users/1
   def show
     if stale?(@user)
-      render json: @user
+      render json: @user, include: [:active_boards]
     end
   end
 
