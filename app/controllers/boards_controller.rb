@@ -1,9 +1,10 @@
 class BoardsController < ApplicationController
+  before_action :set_user, only: [:index]
   before_action :set_board, only: [:show, :update, :destroy]
 
   # GET /boards
   def index
-    @boards = Board.all
+    @boards = (@user ? @user.boards : Board.all)
     if stale?(@boards)
       render json: @boards
     end
@@ -44,6 +45,10 @@ class BoardsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
+  def set_user
+    @user = User.find(params[:user_id]) if params[:user_id]
+  end
+
   def set_board
     @board = Board.find(params[:id])
   end
