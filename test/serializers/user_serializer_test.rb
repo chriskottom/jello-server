@@ -30,7 +30,7 @@ class UserSerializerTest < ActiveSupport::TestCase
 
     assert_equal 4, active_boards.count
 
-    expected_ids = @user.boards.where(archived: false).pluck(:id).sort
+    expected_ids = @user.boards.where(archived: false).pluck(:id)
     assert_ids expected_ids, active_boards
 
     assert_keys %i(id title links), active_boards.first
