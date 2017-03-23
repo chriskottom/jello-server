@@ -14,4 +14,5 @@ end
 
 class ActionDispatch::IntegrationTest
   include JSONService::Helpers
+  include Serialization::ControllerAssertions
 end

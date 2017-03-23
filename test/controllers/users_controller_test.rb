@@ -48,14 +48,7 @@ describe UsersController do
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
         get user_url(id: 'jim'), as: :json
-        assert_response :not_found
-
-        response_error = json_response['error']
-        refute_nil response_error
-
-        assert_equal 404, response_error['status']
-        assert_equal 'Not found', response_error['name']
-        refute_nil response_error['message']
+        assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
@@ -92,17 +85,9 @@ describe UsersController do
           post users_url, params: { user: user_attributes }, as: :json
         end
 
-        assert_response :unprocessable_entity
-
-        response_error = json_response['error']
-        refute_nil response_error
-
-        assert_equal 422, response_error['status']
-        assert_equal 'Validation failed', response_error['name']
-
-        response_errors = response_error['errors']
-        assert_equal ["can't be blank"], response_errors['email']
-        assert_equal ["can't be blank"], response_errors['password']
+        expected_errors = { 'email' => ["can't be blank"],
+                            'password' => ["can't be blank"] }
+        assert_failed_validation_response expected_errors
       end
     end
   end
@@ -131,16 +116,8 @@ describe UsersController do
           patch user_url(@user), params: { user: user_attributes }, as: :json
         end
 
-        assert_response :unprocessable_entity
-
-        response_error = json_response['error']
-        refute_nil response_error
-
-        assert_equal 422, response_error['status']
-        assert_equal 'Validation failed', response_error['name']
-
-        response_errors = response_error['errors']
-        assert_equal ["can't be blank"], response_errors['email']
+        expected_errors = { 'email' => ["can't be blank"] }
+        assert_failed_validation_response expected_errors
       end
     end
 
@@ -149,14 +126,8 @@ describe UsersController do
         user_attributes = { email: 'jim@example.com' }
 
         patch user_url(id: 'jim'), params: { user: user_attributes }, as: :json
-        assert_response :not_found
 
-        response_error = json_response['error']
-        refute_nil response_error
-
-        assert_equal 404, response_error['status']
-        assert_equal 'Not found', response_error['name']
-        refute_nil response_error['message']
+        assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
@@ -177,14 +148,7 @@ describe UsersController do
           delete user_url(id: 'jim'), as: :json
         end
 
-        assert_response :not_found
-
-        response_error = json_response['error']
-        refute_nil response_error
-
-        assert_equal 404, response_error['status']
-        assert_equal 'Not found', response_error['name']
-        refute_nil response_error['message']
+        assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
