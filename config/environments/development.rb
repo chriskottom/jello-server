@@ -43,7 +43,7 @@ Rails.application.configure do
   # Configure URL options for Rails helpers.
   config.after_initialize do
     Rails.application.routes.default_url_options = {
-      host: 'localhost',
+      host: 'api.developing-rails-apis.dev',
       port: '3000'
     }
   end
