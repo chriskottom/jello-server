@@ -24,7 +24,7 @@ describe UsersController do
 
   describe 'GET /users/:id' do
     it 'should successfully fetch the requested User' do
-      get user_url(@user)
+      get user_url(@user), as: :json
       assert_response :ok
 
       response_user = json_response['user']
@@ -45,6 +45,20 @@ describe UsersController do
 
       board_ids = @user.boards.where(archived: [false, nil]).pluck(:id)
       assert_ids board_ids, response_user['active_boards'], 'id'
+    end
+
+    describe 'when :id is unknown' do
+      it 'should respond with :not_found' do
+        get user_url(id: 'jim'), as: :json
+        assert_response :not_found
+
+        response_error = json_response['error']
+        refute_nil response_error
+
+        assert_equal 404, response_error['status']
+        assert_equal 'Not found', response_error['name']
+        refute_nil response_error['message']
+      end
     end
   end
 
