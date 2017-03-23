@@ -11,7 +11,6 @@ describe UsersController do
       get users_url, as: :json
       assert_response :ok
 
-      json_response = JSON.parse(response.body)
       response_users = json_response['users']
       assert_instance_of Array, response_users
 
