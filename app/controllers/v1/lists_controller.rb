@@ -1,7 +1,7 @@
-class ListsController < ApplicationController
+class V1::ListsController < V1::BaseController
   before_action :set_list, only: [:show, :update, :destroy]
 
-  # GET /lists
+  # GET /v1/lists
   def index
     @lists = List.all
     if stale?(@lists)
@@ -9,25 +9,27 @@ class ListsController < ApplicationController
     end
   end
 
-  # GET /lists/1
+  # GET /v1/lists/1
   def show
     if stale?(@list)
       render json: @list
     end
   end
 
-  # POST /lists
+  # POST /v1/lists
   def create
     @list = List.new(list_params)
 
     if @list.save
-      render json: @list, status: :created, location: @list
+      render json: @list,
+             status: :created,
+             location: v1_list_url(@list)
     else
       respond_with_validation_error @list
     end
   end
 
-  # PATCH/PUT /lists/1
+  # PATCH/PUT /v1/lists/1
   def update
     if @list.update(list_params)
       render json: @list
@@ -36,7 +38,7 @@ class ListsController < ApplicationController
     end
   end
 
-  # DELETE /lists/1
+  # DELETE /v1/lists/1
   def destroy
     @list.destroy
   end

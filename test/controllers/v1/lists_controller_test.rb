@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ListsControllerTest < ActionDispatch::IntegrationTest
+class V1::ListsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @list = lists(:active)
     @board = boards(:active)
@@ -14,31 +14,31 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get lists_url, as: :json
+    get v1_lists_url, as: :json
     assert_response :success
   end
 
   test "should create list" do
     assert_difference('List.count') do
-      post lists_url, params: { list: @list_attributes }, as: :json
+      post v1_lists_url, params: { list: @list_attributes }, as: :json
     end
 
     assert_response 201
   end
 
   test "should show list" do
-    get list_url(@list), as: :json
+    get v1_list_url(@list), as: :json
     assert_response :success
   end
 
   test "should update list" do
-    patch list_url(@list), params: { list: @list_attributes }, as: :json
+    patch v1_list_url(@list), params: { list: @list_attributes }, as: :json
     assert_response 200
   end
 
   test "should destroy list" do
     assert_difference('List.count', -1) do
-      delete list_url(@list), as: :json
+      delete v1_list_url(@list), as: :json
     end
 
     assert_response 204

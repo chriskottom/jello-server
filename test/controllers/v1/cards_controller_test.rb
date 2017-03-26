@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CardsControllerTest < ActionDispatch::IntegrationTest
+class V1::CardsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @card = cards(:active)
     @list = lists(:active)
@@ -16,31 +16,31 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get cards_url, as: :json
+    get v1_cards_url, as: :json
     assert_response :success
   end
 
   test "should create card" do
     assert_difference('Card.count') do
-      post cards_url, params: { card: @card_attributes }, as: :json
+      post v1_cards_url, params: { card: @card_attributes }, as: :json
     end
 
     assert_response 201
   end
 
   test "should show card" do
-    get card_url(@card), as: :json
+    get v1_card_url(@card), as: :json
     assert_response :success
   end
 
   test "should update card" do
-    patch card_url(@card), params: { card: @card_attributes }, as: :json
+    patch v1_card_url(@card), params: { card: @card_attributes }, as: :json
     assert_response 200
   end
 
   test "should destroy card" do
     assert_difference('Card.count', -1) do
-      delete card_url(@card), as: :json
+      delete v1_card_url(@card), as: :json
     end
 
     assert_response 204

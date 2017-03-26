@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CommentsControllerTest < ActionDispatch::IntegrationTest
+class V1::CommentsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @comment = comments(:active)
     @card = cards(:active)
@@ -13,25 +13,25 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get comments_url, as: :json
+    get v1_comments_url, as: :json
     assert_response :success
   end
 
   test "should create comment" do
     assert_difference('Comment.count') do
-      post comments_url, params: { comment: @comment_attributes }, as: :json
+      post v1_comments_url, params: { comment: @comment_attributes }, as: :json
     end
 
     assert_response 201
   end
 
   test "should show comment" do
-    get comment_url(@comment), as: :json
+    get v1_comment_url(@comment), as: :json
     assert_response :success
   end
 
   test "should update comment" do
-    patch comment_url(@comment),
+    patch v1_comment_url(@comment),
           params: { comment: @comment_attributes },
           as: :json
     assert_response 200
@@ -39,7 +39,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy comment" do
     assert_difference('Comment.count', -1) do
-      delete comment_url(@comment), as: :json
+      delete v1_comment_url(@comment), as: :json
     end
 
     assert_response 204

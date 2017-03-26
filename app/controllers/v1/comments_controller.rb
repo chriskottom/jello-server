@@ -1,7 +1,7 @@
-class CommentsController < ApplicationController
+class V1::CommentsController < V1::BaseController
   before_action :set_comment, only: [:show, :update, :destroy]
 
-  # GET /comments
+  # GET /v1/comments
   def index
     @comments = Comment.all
     if stale?(@comments)
@@ -9,25 +9,27 @@ class CommentsController < ApplicationController
     end
   end
 
-  # GET /comments/1
+  # GET /v1/comments/1
   def show
     if stale?(@comment)
       render json: @comment
     end
   end
 
-  # POST /comments
+  # POST /v1/comments
   def create
     @comment = Comment.new(comment_params)
 
     if @comment.save
-      render json: @comment, status: :created, location: @comment
+      render json: @comment,
+             status: :created,
+             location: v1_comment_url(@comment)
     else
       respond_with_validation_error @comment
     end
   end
 
-  # PATCH/PUT /comments/1
+  # PATCH/PUT /v1/comments/1
   def update
     if @comment.update(comment_params)
       render json: @comment
@@ -36,7 +38,7 @@ class CommentsController < ApplicationController
     end
   end
 
-  # DELETE /comments/1
+  # DELETE /v1/comments/1
   def destroy
     @comment.destroy
   end

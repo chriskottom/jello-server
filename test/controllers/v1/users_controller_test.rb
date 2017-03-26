@@ -1,15 +1,15 @@
 require 'test_helper'
 
-describe UsersController do
+describe V1::UsersController do
   before do
     @user = users(:admin)
   end
 
-  describe 'GET /users' do
+  describe 'GET /v1/users' do
     it 'should successfully fetch all Users' do
       expected_users = User.all
 
-      get users_url, as: :json
+      get v1_users_url, as: :json
       assert_response :ok
 
       response_users = json_response['users']
@@ -22,9 +22,9 @@ describe UsersController do
     end
   end
 
-  describe 'GET /users/:id' do
+  describe 'GET /v1/users/:id' do
     it 'should successfully fetch the requested User' do
-      get user_url(@user), as: :json
+      get v1_user_url(@user), as: :json
       assert_response :ok
 
       expected_keys = %w( id email gravatar_url admin created_at updated_at links 
@@ -35,10 +35,10 @@ describe UsersController do
       assert_equal @user.email, response_user['email']
       assert_equal @user.gravatar_url, response_user['gravatar_url']
 
-      self_link = { 'rel' => 'self', 'href' => user_url(@user) }
+      self_link = { 'rel' => 'self', 'href' => v1_user_url(@user) }
       assert_link self_link, response_user, 'links'
 
-      boards_link = { 'rel' => 'boards', 'href' => user_boards_url(@user) }
+      boards_link = { 'rel' => 'boards', 'href' => v1_user_boards_url(@user) }
       assert_link boards_link, response_user, 'links'
 
       board_ids = @user.boards.where(archived: [false, nil]).pluck(:id)
@@ -47,13 +47,13 @@ describe UsersController do
 
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
-        get user_url(id: 'jim'), as: :json
+        get v1_user_url(id: 'jim'), as: :json
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
 
-  describe 'POST /users' do
+  describe 'POST /v1/users' do
     it 'should create and respond with a new User' do
       user_attributes = {
         email: 'jim@example.com',
@@ -62,7 +62,7 @@ describe UsersController do
       }
 
       assert_difference('User.count') do
-        post users_url, params: { user: user_attributes }, as: :json
+        post v1_users_url, params: { user: user_attributes }, as: :json
       end
 
       assert_response :created
@@ -82,7 +82,7 @@ describe UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          post users_url, params: { user: user_attributes }, as: :json
+          post v1_users_url, params: { user: user_attributes }, as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"],
@@ -92,14 +92,14 @@ describe UsersController do
     end
   end
 
-  describe 'PATCH /users/:id' do
+  describe 'PATCH /v1/users/:id' do
     it 'should update the requested User' do
       user_attributes = { email: 'jim@example.com' }
 
       update_time = 1.day.from_now.change(usec: 0)  # truncate milliseconds
       travel_to update_time
 
-      patch user_url(@user), params: { user: user_attributes }, as: :json
+      patch v1_user_url(@user), params: { user: user_attributes }, as: :json
       assert_response :ok
 
       assert_equal user_attributes[:email], response_user['email']
@@ -113,7 +113,7 @@ describe UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          patch user_url(@user), params: { user: user_attributes }, as: :json
+          patch v1_user_url(@user), params: { user: user_attributes }, as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"] }
@@ -125,17 +125,17 @@ describe UsersController do
       it 'should respond with :not_found' do
         user_attributes = { email: 'jim@example.com' }
 
-        patch user_url(id: 'jim'), params: { user: user_attributes }, as: :json
+        patch v1_user_url(id: 'jim'), params: { user: user_attributes }, as: :json
 
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
 
-  describe 'DELETE /users/:id' do
+  describe 'DELETE /v1/users/:id' do
     it 'should successfully delete the requested User' do
       assert_difference('User.count', -1) do
-        delete user_url(@user), as: :json
+        delete v1_user_url(@user), as: :json
       end
 
       assert_response :no_content
@@ -145,7 +145,7 @@ describe UsersController do
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
         assert_no_difference('User.count') do
-          delete user_url(id: 'jim'), as: :json
+          delete v1_user_url(id: 'jim'), as: :json
         end
 
         assert_not_found_response("Couldn't find User with 'id'=jim")

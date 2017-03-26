@@ -1,7 +1,7 @@
-class UsersController < ApplicationController
+class V1::UsersController < V1::BaseController
   before_action :set_user, only: [:show, :update, :destroy]
 
-  # GET /users
+  # GET /v1/users
   def index
     @users = User.all
     if stale?(@users)
@@ -9,25 +9,27 @@ class UsersController < ApplicationController
     end
   end
 
-  # GET /users/1
+  # GET /v1/users/1
   def show
     if stale?(@user)
       render json: @user, include: [:active_boards]
     end
   end
 
-  # POST /users
+  # POST /v1/users
   def create
     @user = User.new(user_params)
 
     if @user.save
-      render json: @user, status: :created, location: @user
+      render json: @user,
+             status: :created,
+             location: v1_user_url(@user)
     else
       respond_with_validation_error @user
     end
   end
 
-  # PATCH/PUT /users/1
+  # PATCH/PUT /v1/users/1
   def update
     if @user.update(user_params)
       render json: @user
@@ -36,7 +38,7 @@ class UsersController < ApplicationController
     end
   end
 
-  # DELETE /users/1
+  # DELETE /v1/users/1
   def destroy
     @user.destroy
   end

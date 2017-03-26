@@ -1,7 +1,7 @@
-class CardsController < ApplicationController
+class V1::CardsController < V1::BaseController
   before_action :set_card, only: [:show, :update, :destroy]
 
-  # GET /cards
+  # GET /v1/cards
   def index
     @cards = Card.all
     if stale?(@cards)
@@ -9,25 +9,27 @@ class CardsController < ApplicationController
     end
   end
 
-  # GET /cards/1
+  # GET /v1/cards/1
   def show
     if stale?(@card)
       render json: @card
     end
   end
 
-  # POST /cards
+  # POST /v1/cards
   def create
     @card = Card.new(card_params)
 
     if @card.save
-      render json: @card, status: :created, location: @card
+      render json: @card,
+             status: :created,
+             location: v1_card_url(@card)
     else
       respond_with_validation_error @card
     end
   end
 
-  # PATCH/PUT /cards/1
+  # PATCH/PUT /v1/cards/1
   def update
     if @card.update(card_params)
       render json: @card
@@ -36,7 +38,7 @@ class CardsController < ApplicationController
     end
   end
 
-  # DELETE /cards/1
+  # DELETE /v1/cards/1
   def destroy
     @card.destroy
   end

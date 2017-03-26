@@ -1,8 +1,8 @@
-class BoardsController < ApplicationController
+class V1::BoardsController < V1::BaseController
   before_action :set_user, only: [:index]
   before_action :set_board, only: [:show, :update, :destroy]
 
-  # GET /boards
+  # GET /v1/boards
   def index
     @boards = (@user ? @user.boards : Board.all)
     if stale?(@boards)
@@ -10,25 +10,27 @@ class BoardsController < ApplicationController
     end
   end
 
-  # GET /boards/1
+  # GET /v1/boards/1
   def show
     if stale?(@board)
       render json: @board
     end
   end
 
-  # POST /boards
+  # POST /v1/boards
   def create
     @board = Board.new(board_params)
 
     if @board.save
-      render json: @board, status: :created, location: @board
+      render json: @board,
+             status: :created,
+             location: v1_board_url(@board)
     else
       respond_with_validation_error @board
     end
   end
 
-  # PATCH/PUT /boards/1
+  # PATCH/PUT /v1/boards/1
   def update
     if @board.update(board_params)
       render json: @board
@@ -37,7 +39,7 @@ class BoardsController < ApplicationController
     end
   end
 
-  # DELETE /boards/1
+  # DELETE /v1/boards/1
   def destroy
     @board.destroy
   end

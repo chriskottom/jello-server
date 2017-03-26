@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class BoardSerializerTest < ActiveSupport::TestCase
+class V1::BoardSerializerTest < ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
   include Serialization::Helpers
 
@@ -17,10 +17,10 @@ class BoardSerializerTest < ActiveSupport::TestCase
   test 'includes links for the Board' do
     assert_equal 2, serialized_board[:links].count
 
-    self_link = { rel: :self, href: board_url(@board) }
+    self_link = { rel: :self, href: v1_board_url(@board) }
     assert_link self_link, serialized_board
 
-    creator_link = { rel: :creator, href: user_url(@board.creator) }
+    creator_link = { rel: :creator, href: v1_user_url(@board.creator) }
     assert_link creator_link, serialized_board
   end
 
@@ -32,6 +32,6 @@ class BoardSerializerTest < ActiveSupport::TestCase
   private
 
   def serialized_board
-    serialized_data(@board)
+    serialized_data(@board, V1::BoardSerializer)
   end
 end
