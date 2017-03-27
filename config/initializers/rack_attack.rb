@@ -3,6 +3,11 @@ Rack::Attack.throttle("req/ip", :limit => 10, :period => 1.second) do |req|
   req.ip
 end
 
+# Whitelist localhost for any number of requests.
+Rack::Attack.safelist 'allow localhost' do |req|
+  '127.0.0.1' == req.ip || '::1' == req.ip
+end
+
 # Customize the response delivered to rate limited clients.
 Rack::Attack.throttled_response = ->(env) {
   status_code = 429
