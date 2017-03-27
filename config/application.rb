@@ -32,5 +32,8 @@ module JelloServer
 
     # Use Rack::Attack for rate limiting, client whitelisting, etc.
     config.middleware.use Rack::Attack
+
+    # Add Rack::Attack::RateLimit to include X-RateLimit headers in all responses.
+    config.middleware.use Rack::Attack::RateLimit, throttle: ['req/ip']
   end
 end

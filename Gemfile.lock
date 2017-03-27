@@ -86,6 +86,8 @@ GEM
     rack (2.0.1)
     rack-attack (5.0.1)
       rack
+    rack-attack-rate-limit (1.1.0)
+      rack
     rack-cors (0.4.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -169,6 +171,7 @@ DEPENDENCIES
   pg
   puma (~> 3.0)
   rack-attack
+  rack-attack-rate-limit
   rack-cors
   rails (~> 5.0.2)
   redis-rails
