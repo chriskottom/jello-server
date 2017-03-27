@@ -84,6 +84,8 @@ GEM
     pg (0.20.0)
     puma (3.8.2)
     rack (2.0.1)
+    rack-attack (5.0.1)
+      rack
     rack-cors (0.4.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -114,6 +116,23 @@ GEM
     rb-fsevent (0.9.8)
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
+    redis (3.3.3)
+    redis-actionpack (5.0.1)
+      actionpack (>= 4.0, < 6)
+      redis-rack (>= 1, < 3)
+      redis-store (>= 1.1.0, < 1.4.0)
+    redis-activesupport (5.0.1)
+      activesupport (>= 3, < 6)
+      redis-store (~> 1.2.0)
+    redis-rack (2.0.1)
+      rack (>= 2.0, < 3)
+      redis-store (>= 1.2, < 1.4)
+    redis-rails (5.0.1)
+      redis-actionpack (~> 5.0.0)
+      redis-activesupport (~> 5.0.0)
+      redis-store (~> 1.2.0)
+    redis-store (1.2.0)
+      redis (>= 2.2)
     spring (2.0.1)
       activesupport (>= 4.2)
     spring-watcher-listen (2.0.1)
@@ -149,8 +168,10 @@ DEPENDENCIES
   minitest-rg
   pg
   puma (~> 3.0)
+  rack-attack
   rack-cors
   rails (~> 5.0.2)
+  redis-rails
   spring
   spring-watcher-listen (~> 2.0.0)
   sqlite3

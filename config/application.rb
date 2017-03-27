@@ -26,5 +26,11 @@ module JelloServer
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Use Redis as the main Rails.cache store where REDIS_URL is defined.
+    config.cache_store = :redis_store if ENV['REDIS_URL']
+
+    # Use Rack::Attack for rate limiting, client whitelisting, etc.
+    config.middleware.use Rack::Attack
   end
 end

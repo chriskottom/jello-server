@@ -15,6 +15,8 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'rack-cors'
 gem 'active_model_serializers'
+gem 'rack-attack'
+gem 'redis-rails'
 
 group :development, :test do
   gem 'byebug', platform: :mri
