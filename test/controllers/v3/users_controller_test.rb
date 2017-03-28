@@ -1,16 +1,16 @@
 require 'test_helper'
 
-describe V2::UsersController do
+describe V3::UsersController do
   before do
     @user = users(:admin)
     @per_page = 3
   end
 
-  describe 'GET /v2/users' do
+  describe 'GET /v3/users' do
     it 'should successfully fetch the first page of Users' do
       page = 1
       @expected_users = User.page(page).per(@per_page)
-      get v2_users_url(page: { number: page, size: @per_page }), as: :json
+      get v3_users_url(page: { number: page, size: @per_page }), as: :json
 
       assert_response :ok
       assert_equal 'application/json', response.content_type
@@ -38,7 +38,7 @@ describe V2::UsersController do
     it 'should paginate the fetched Users' do
       page = 3
       @expected_users = User.page(page).per(@per_page)
-      get v2_users_url(page: { number: page, size: @per_page }), as: :json
+      get v3_users_url(page: { number: page, size: @per_page }), as: :json
 
       response_users = json_response['users']
       assert_ids @expected_users.pluck(:id), response_users, 'id'
@@ -53,9 +53,9 @@ describe V2::UsersController do
     end
   end
 
-  describe 'GET /v2/users/:id' do
+  describe 'GET /v3/users/:id' do
     it 'should successfully fetch the requested User' do
-      get v2_user_url(@user), as: :json
+      get v3_user_url(@user), as: :json
       assert_response :ok
 
       expected_keys = %w( id email gravatar_url admin created_at updated_at links
@@ -66,10 +66,10 @@ describe V2::UsersController do
       assert_equal @user.email, response_user['email']
       assert_equal @user.gravatar_url, response_user['gravatar_url']
 
-      self_link = { 'rel' => 'self', 'href' => v2_user_url(@user) }
+      self_link = { 'rel' => 'self', 'href' => v3_user_url(@user) }
       assert_link self_link, response_user, 'links'
 
-      boards_link = { 'rel' => 'boards', 'href' => v2_user_boards_url(@user) }
+      boards_link = { 'rel' => 'boards', 'href' => v3_user_boards_url(@user) }
       assert_link boards_link, response_user, 'links'
 
       board_ids = @user.boards.where(archived: [false, nil]).pluck(:id)
@@ -78,13 +78,13 @@ describe V2::UsersController do
 
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
-        get v2_user_url(id: 'jim'), as: :json
+        get v3_user_url(id: 'jim'), as: :json
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
 
-  describe 'POST /v2/users' do
+  describe 'POST /v3/users' do
     it 'should create and respond with a new User' do
       user_attributes = {
         email: 'jim@example.com',
@@ -93,7 +93,7 @@ describe V2::UsersController do
       }
 
       assert_difference('User.count') do
-        post v2_users_url, params: { user: user_attributes }, as: :json
+        post v3_users_url, params: { user: user_attributes }, as: :json
       end
 
       assert_response :created
@@ -113,7 +113,7 @@ describe V2::UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          post v2_users_url, params: { user: user_attributes }, as: :json
+          post v3_users_url, params: { user: user_attributes }, as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"],
@@ -123,14 +123,14 @@ describe V2::UsersController do
     end
   end
 
-  describe 'PATCH /v2/users/:id' do
+  describe 'PATCH /v3/users/:id' do
     it 'should update the requested User' do
       user_attributes = { email: 'jim@example.com' }
 
       update_time = 1.day.from_now.change(usec: 0)  # truncate milliseconds
       travel_to update_time
 
-      patch v2_user_url(@user), params: { user: user_attributes }, as: :json
+      patch v3_user_url(@user), params: { user: user_attributes }, as: :json
       assert_response :ok
 
       assert_equal user_attributes[:email], response_user['email']
@@ -144,7 +144,7 @@ describe V2::UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          patch v2_user_url(@user), params: { user: user_attributes }, as: :json
+          patch v3_user_url(@user), params: { user: user_attributes }, as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"] }
@@ -156,17 +156,17 @@ describe V2::UsersController do
       it 'should respond with :not_found' do
         user_attributes = { email: 'jim@example.com' }
 
-        patch v2_user_url(id: 'jim'), params: { user: user_attributes }, as: :json
+        patch v3_user_url(id: 'jim'), params: { user: user_attributes }, as: :json
 
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
   end
 
-  describe 'DELETE /v2/users/:id' do
+  describe 'DELETE /v3/users/:id' do
     it 'should successfully delete the requested User' do
       assert_difference('User.count', -1) do
-        delete v2_user_url(@user), as: :json
+        delete v3_user_url(@user), as: :json
       end
 
       assert_response :no_content
@@ -176,7 +176,7 @@ describe V2::UsersController do
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
         assert_no_difference('User.count') do
-          delete v2_user_url(id: 'jim'), as: :json
+          delete v3_user_url(id: 'jim'), as: :json
         end
 
         assert_not_found_response("Couldn't find User with 'id'=jim")
