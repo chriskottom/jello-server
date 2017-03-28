@@ -60,6 +60,18 @@ GEM
       activesupport (>= 4.1.0)
     i18n (0.8.1)
     jsonapi-renderer (0.1.2)
+    kaminari (1.0.1)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.0.1)
+      kaminari-activerecord (= 1.0.1)
+      kaminari-core (= 1.0.1)
+    kaminari-actionview (1.0.1)
+      actionview
+      kaminari-core (= 1.0.1)
+    kaminari-activerecord (1.0.1)
+      activerecord
+      kaminari-core (= 1.0.1)
+    kaminari-core (1.0.1)
     listen (3.0.8)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -164,6 +176,7 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   byebug
   dotenv-rails
+  kaminari
   listen (~> 3.0.5)
   minitest (> 5.10)
   minitest-rails

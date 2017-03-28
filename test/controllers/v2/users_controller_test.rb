@@ -3,22 +3,50 @@ require 'test_helper'
 describe V2::UsersController do
   before do
     @user = users(:admin)
+    @per_page = 3
   end
 
   describe 'GET /v2/users' do
-    it 'should successfully fetch all Users' do
-      expected_users = User.all
+    it 'should successfully fetch the first page of Users' do
+      page = 1
+      @expected_users = User.page(page).per(@per_page)
+      get v2_users_url(page: { number: page, size: @per_page }), as: :json
 
-      get v2_users_url, as: :json
       assert_response :ok
+      assert_equal 'application/json', response.content_type
 
       response_users = json_response['users']
       assert_instance_of Array, response_users
+      assert_equal @per_page, response_users.count
 
-      assert_ids expected_users.pluck(:id), response_users, 'id'
+      response_ids = response_users.map { |u| u['id'] }
+      assert_equal @expected_users.ids.sort, response_ids.sort
+
+      user_count = User.count
+      response_meta = json_response.dig('meta')
+      assert_equal page, response_meta['current_page']
+      assert_equal page+1, response_meta['next_page']
+      assert_nil response_meta['prev_page']
+      assert_equal user_count, response_meta['total_count']
+      assert_equal (user_count.to_f / @per_page.to_f).ceil,
+                   response_meta['total_pages']
+    end
+
+    it 'should paginate the fetched Users' do
+      page = 3
+      @expected_users = User.page(page).per(@per_page)
+      get v2_users_url(page: { number: page, size: @per_page }), as: :json
+
+      response_users = json_response['users']
+      assert_ids @expected_users.pluck(:id), response_users, 'id'
 
       expected_keys = %w( id email gravatar_url admin created_at updated_at links )
       assert_keys expected_keys, response_users.first
+
+      response_meta = json_response.dig('meta')
+      assert_equal page, response_meta['current_page']
+      assert_equal page+1, response_meta['next_page']
+      assert_equal page-1, response_meta['prev_page']
     end
   end
 
@@ -27,7 +55,7 @@ describe V2::UsersController do
       get v2_user_url(@user), as: :json
       assert_response :ok
 
-      expected_keys = %w( id email gravatar_url admin created_at updated_at links 
+      expected_keys = %w( id email gravatar_url admin created_at updated_at links
                           active_boards )
       assert_keys expected_keys, response_user
 
