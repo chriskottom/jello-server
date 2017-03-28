@@ -61,6 +61,9 @@ describe V3::UsersController do
         headers = auth_headers(username: 'FAIL', password: 'FAIL')
         get v3_users_url, headers: headers, as: :json
         assert_response :unauthorized
+
+        assert_equal 'HTTP Basic: Access denied.',
+                     json_response.dig('error', 'message')
       end
     end
   end
