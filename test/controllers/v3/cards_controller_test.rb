@@ -16,31 +16,37 @@ class V3::CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get v3_cards_url, as: :json
+    get v3_cards_url, headers: auth_headers(user: @user), as: :json
     assert_response :success
   end
 
   test "should create card" do
     assert_difference('Card.count') do
-      post v3_cards_url, params: { card: @card_attributes }, as: :json
+      post v3_cards_url,
+           headers: auth_headers(user: @user),
+           params: { card: @card_attributes },
+           as: :json
     end
 
     assert_response 201
   end
 
   test "should show card" do
-    get v3_card_url(@card), as: :json
+    get v3_card_url(@card), headers: auth_headers(user: @user), as: :json
     assert_response :success
   end
 
   test "should update card" do
-    patch v3_card_url(@card), params: { card: @card_attributes }, as: :json
+    patch v3_card_url(@card),
+          headers: auth_headers(user: @user),
+          params: { card: @card_attributes },
+          as: :json
     assert_response 200
   end
 
   test "should destroy card" do
     assert_difference('Card.count', -1) do
-      delete v3_card_url(@card), as: :json
+      delete v3_card_url(@card), headers: auth_headers(user: @user), as: :json
     end
 
     assert_response 204

@@ -10,7 +10,9 @@ describe V3::UsersController do
     it 'should successfully fetch the first page of Users' do
       page = 1
       @expected_users = User.page(page).per(@per_page)
-      get v3_users_url(page: { number: page, size: @per_page }), as: :json
+      get v3_users_url(page: { number: page, size: @per_page }),
+          headers: auth_headers(user: @user),
+          as: :json
 
       assert_response :ok
       assert_equal 'application/json', response.content_type
@@ -38,7 +40,9 @@ describe V3::UsersController do
     it 'should paginate the fetched Users' do
       page = 3
       @expected_users = User.page(page).per(@per_page)
-      get v3_users_url(page: { number: page, size: @per_page }), as: :json
+      get v3_users_url(page: { number: page, size: @per_page }),
+          headers: auth_headers(user: @user),
+          as: :json
 
       response_users = json_response['users']
       assert_ids @expected_users.pluck(:id), response_users, 'id'
@@ -55,7 +59,7 @@ describe V3::UsersController do
 
   describe 'GET /v3/users/:id' do
     it 'should successfully fetch the requested User' do
-      get v3_user_url(@user), as: :json
+      get v3_user_url(@user), headers: auth_headers(user: @user), as: :json
       assert_response :ok
 
       expected_keys = %w( id email gravatar_url admin created_at updated_at links
@@ -78,7 +82,9 @@ describe V3::UsersController do
 
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
-        get v3_user_url(id: 'jim'), as: :json
+        get v3_user_url(id: 'jim'),
+            headers: auth_headers(user: @user),
+            as: :json
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
     end
@@ -93,7 +99,10 @@ describe V3::UsersController do
       }
 
       assert_difference('User.count') do
-        post v3_users_url, params: { user: user_attributes }, as: :json
+        post v3_users_url,
+             headers: auth_headers(user: @user),
+             params: { user: user_attributes },
+             as: :json
       end
 
       assert_response :created
@@ -113,7 +122,10 @@ describe V3::UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          post v3_users_url, params: { user: user_attributes }, as: :json
+          post v3_users_url,
+               headers: auth_headers(user: @user),
+               params: { user: user_attributes },
+               as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"],
@@ -130,7 +142,10 @@ describe V3::UsersController do
       update_time = 1.day.from_now.change(usec: 0)  # truncate milliseconds
       travel_to update_time
 
-      patch v3_user_url(@user), params: { user: user_attributes }, as: :json
+      patch v3_user_url(@user),
+            headers: auth_headers(user: @user),
+            params: { user: user_attributes },
+            as: :json
       assert_response :ok
 
       assert_equal user_attributes[:email], response_user['email']
@@ -144,7 +159,10 @@ describe V3::UsersController do
         user_attributes = { email: '' }
 
         assert_no_difference('User.count') do
-          patch v3_user_url(@user), params: { user: user_attributes }, as: :json
+          patch v3_user_url(@user),
+                headers: auth_headers(user: @user),
+                params: { user: user_attributes },
+                as: :json
         end
 
         expected_errors = { 'email' => ["can't be blank"] }
@@ -156,7 +174,10 @@ describe V3::UsersController do
       it 'should respond with :not_found' do
         user_attributes = { email: 'jim@example.com' }
 
-        patch v3_user_url(id: 'jim'), params: { user: user_attributes }, as: :json
+        patch v3_user_url(id: 'jim'),
+              headers: auth_headers(user: @user),
+              params: { user: user_attributes },
+              as: :json
 
         assert_not_found_response("Couldn't find User with 'id'=jim")
       end
@@ -166,7 +187,7 @@ describe V3::UsersController do
   describe 'DELETE /v3/users/:id' do
     it 'should successfully delete the requested User' do
       assert_difference('User.count', -1) do
-        delete v3_user_url(@user), as: :json
+        delete v3_user_url(@user), headers: auth_headers(user: @user), as: :json
       end
 
       assert_response :no_content
@@ -176,7 +197,9 @@ describe V3::UsersController do
     describe 'when :id is unknown' do
       it 'should respond with :not_found' do
         assert_no_difference('User.count') do
-          delete v3_user_url(id: 'jim'), as: :json
+          delete v3_user_url(id: 'jim'),
+                 headers: auth_headers(user: @user),
+                 as: :json
         end
 
         assert_not_found_response("Couldn't find User with 'id'=jim")
