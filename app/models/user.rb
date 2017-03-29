@@ -19,4 +19,13 @@ class User < ApplicationRecord
   def self.admin
     where(admin: true)
   end
+
+  def self.authenticate!(email, password, scope = User.all)
+    user = scope.find_by(email: email)
+    return user && user.authenticate(password)
+  end
+
+  def self.authenticate_admin!(email, password)
+    authenticate!(email, password, self.admin)
+  end
 end
