@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  use_doorkeeper
   concern :api_base do
     resources :users do
       resources :boards, only: [:index]

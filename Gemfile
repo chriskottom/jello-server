@@ -19,6 +19,7 @@ gem 'rack-attack'
 gem 'rack-attack-rate-limit', require: 'rack/attack/rate-limit'
 gem 'redis-rails'
 gem 'kaminari'
+gem 'doorkeeper'
 
 group :development, :test do
   gem 'byebug', platform: :mri
