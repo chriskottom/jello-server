@@ -13,25 +13,29 @@ class V3::CommentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get v3_comments_url, as: :json
+    get v3_comments_url, headers: auth_headers(user: @user), as: :json
     assert_response :success
   end
 
   test "should create comment" do
     assert_difference('Comment.count') do
-      post v3_comments_url, params: { comment: @comment_attributes }, as: :json
+      post v3_comments_url,
+           headers: auth_headers(user: @user),
+           params: { comment: @comment_attributes },
+           as: :json
     end
 
     assert_response 201
   end
 
   test "should show comment" do
-    get v3_comment_url(@comment), as: :json
+    get v3_comment_url(@comment), headers: auth_headers(user: @user), as: :json
     assert_response :success
   end
 
   test "should update comment" do
     patch v3_comment_url(@comment),
+          headers: auth_headers(user: @user),
           params: { comment: @comment_attributes },
           as: :json
     assert_response 200
@@ -39,7 +43,7 @@ class V3::CommentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy comment" do
     assert_difference('Comment.count', -1) do
-      delete v3_comment_url(@comment), as: :json
+      delete v3_comment_url(@comment), headers: auth_headers(user: @user), as: :json
     end
 
     assert_response 204

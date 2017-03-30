@@ -61,5 +61,12 @@ module Serialization
         assert_equal error_messages, validation_messages[key]
       end
     end
+
+    def assert_unauthorized_response(message = nil)
+      assert_response :unauthorized
+      error_attributes = { 'status' => 401, 'name' => 'Unauthorized' }
+      error_attributes['message'] = message if message
+      assert_error_response(error_attributes)
+    end
   end
 end
