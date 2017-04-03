@@ -15,6 +15,10 @@ Rails.application.routes.draw do
 
   subdomain = ENV.fetch('API_SUBDOMAIN', '')
   constraints subdomain: subdomain do
+    namespace :v4 do
+      concerns :api_base
+    end
+
     namespace :v3 do
       concerns :api_base
     end
