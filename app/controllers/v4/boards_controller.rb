@@ -13,7 +13,7 @@ class V4::BoardsController < V4::BaseController
   # GET /v4/boards/1
   def show
     if stale?(@board)
-      render json: @board
+      render json: @board, include: [:creator]
     end
   end
 

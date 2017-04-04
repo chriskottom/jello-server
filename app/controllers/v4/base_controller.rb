@@ -1,4 +1,7 @@
 class V4::BaseController < ApplicationController
+  include JSONAPI::ErrorRendering
+  prepend JSONAPI::Rendering
+
   before_action :doorkeeper_authorize!
 
   def doorkeeper_unauthorized_render_options(error: nil)

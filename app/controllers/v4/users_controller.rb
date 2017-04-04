@@ -7,7 +7,7 @@ class V4::UsersController < V4::BaseController
     page_size = params.dig(:page, :size) || User.default_per_page
     @users = User.page(page_number).per(page_size)
     if stale?(@users)
-      render json: @users, include: [], meta: pagination_meta(@users)
+      render json: @users, include: []
     end
   end
 
