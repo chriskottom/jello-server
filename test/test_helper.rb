@@ -6,6 +6,7 @@ require 'minitest/rails'
 require 'support/authentication'
 require 'support/json_service'
 require 'support/serialization'
+require 'support/serialization/jsonapi'
 
 class ActiveSupport::TestCase
   include Serialization::Assertions

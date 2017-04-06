@@ -2,50 +2,51 @@ require 'test_helper'
 
 class V4::UserSerializerTest < ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
-  include Serialization::Helpers
+  include Serialization::JSONAPI::Assertions
+  include Serialization::JSONAPI::Helpers
 
   setup do
     @user = users(:admin)
   end
 
+  test 'identifies the User' do
+    assert_equal @user.id.to_s, serialized_user.dig(:data, :id)
+    assert_equal 'users', serialized_user.dig(:data, :type)
+  end
+
   test 'serializes all visible attributes for a User' do
-    %i(id email gravatar_url admin created_at updated_at).each do |attribute|
-      assert_equal @user.send(attribute), serialized_user[attribute]
-    end
+    assert_equal @user.email, serialized_user_attributes[:email]
+    assert_equal @user.gravatar_url, serialized_user_attributes[:'gravatar-url']
+    assert_equal @user.admin?, serialized_user_attributes[:admin]
+    assert_equal @user.created_at, serialized_user_attributes[:"created-at"]
+    assert_equal @user.updated_at, serialized_user_attributes[:"updated-at"]
   end
 
   test 'includes links for the User' do
-    assert_equal 2, serialized_user[:links].count
+    assert_equal 1, serialized_user_links.count
 
-    self_link = { rel: :self, href: v4_user_url(@user) }
-    assert_link self_link, serialized_user
-
-    boards_link = { rel: :boards, href: v4_user_boards_url(@user) }
-    assert_link boards_link, serialized_user
+    self_link = { self: v4_user_url(@user) }
+    assert_equal self_link, serialized_user_links
   end
 
   test 'includes currently active Boards created by the User' do
     create_user_boards(3)
-    active_boards = serialized_user[:active_boards]
+    active_boards = serialized_user_relationships.dig(:'active-boards', :data)
 
     assert_equal 4, active_boards.count
 
     expected_ids = @user.boards.where(archived: false).pluck(:id)
     assert_ids expected_ids, active_boards
-
-    assert_keys %i(id title links), active_boards.first
   end
 
   test 'includes archived Boards created by the User' do
     create_user_boards(5)
-    inactive_boards = serialized_user[:archived_boards]
+    inactive_boards = serialized_user_relationships.dig(:'archived-boards', :data)
 
     assert_equal 5, inactive_boards.count
 
     expected_ids = @user.boards.where(archived: true).pluck(:id)
     assert_ids expected_ids, inactive_boards
-
-    assert_keys %i(id title links), inactive_boards.first
   end
 
   private
@@ -59,6 +60,22 @@ class V4::UserSerializerTest < ActiveSupport::TestCase
 
   def serialized_user(user = nil)
     user ||= @user
-    serialized_data(user, V4::UserSerializer)
+    @_serialized_user ||= serialized_data(user, V4::UserSerializer)
+  end
+
+  def serialized_user_attributes(user = nil)
+    jsonapi_attributes serialized_user(user)
+  end
+
+  def serialized_user_links(user = nil)
+    jsonapi_links serialized_user(user)
+  end
+
+  def serialized_user_relationships(user = nil)
+    jsonapi_relationships serialized_user(user)
+  end
+
+  def serialized_user_includes(user = nil)
+    jsonapi_includes serialized_user(user)
   end
 end

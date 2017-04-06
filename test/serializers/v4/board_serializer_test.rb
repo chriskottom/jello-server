@@ -2,36 +2,56 @@ require 'test_helper'
 
 class V4::BoardSerializerTest < ActiveSupport::TestCase
   include Rails.application.routes.url_helpers
-  include Serialization::Helpers
+  include Serialization::JSONAPI::Helpers
 
   setup do
     @board = boards(:active)
   end
 
+  test 'identifies the Board' do
+    assert_equal @board.id.to_s, serialized_board.dig(:data, :id)
+    assert_equal 'boards', serialized_board.dig(:data, :type)
+  end
+
   test 'serializes all attributes for a Board' do
-    %i(id title archived created_at updated_at).each do |attribute|
-      assert_equal @board.send(attribute), serialized_board[attribute]
-    end
+    assert_equal @board.title, serialized_board_attributes[:title]
+    assert_equal @board.archived?, serialized_board_attributes[:archived]
+    assert_equal @board.created_at, serialized_board_attributes[:"created-at"]
+    assert_equal @board.updated_at, serialized_board_attributes[:"updated-at"]
   end
 
   test 'includes links for the Board' do
-    assert_equal 2, serialized_board[:links].count
+    assert_equal 1, serialized_board_links.count
 
-    self_link = { rel: :self, href: v4_board_url(@board) }
-    assert_link self_link, serialized_board
-
-    creator_link = { rel: :creator, href: v4_user_url(@board.creator) }
-    assert_link creator_link, serialized_board
+    self_link = { self: v4_board_url(@board) }
+    assert_equal self_link, serialized_board_links
   end
 
   test 'includes the creator of the Board' do
-    creator = serialized_board[:creator]
-    assert_equal @board.creator.id, creator[:id]
+    serialized_creator = serialized_board_relationships[:creator]
+
+    assert_equal @board.creator.id.to_s,
+                 serialized_creator.dig(:data, :id)
+    assert_equal 'users', serialized_creator.dig(:data, :type)
+    assert_equal v4_user_url(@board.creator),
+                 serialized_creator.dig(:links, :related)
   end
 
   private
 
   def serialized_board
-    serialized_data(@board, V4::BoardSerializer)
+    @_serialized_board ||= serialized_data(@board, V4::BoardSerializer)
+  end
+
+  def serialized_board_attributes
+    serialized_board.dig(:data, :attributes)
+  end
+
+  def serialized_board_links
+    serialized_board.dig(:data, :links)
+  end
+
+  def serialized_board_relationships
+    serialized_board.dig(:data, :relationships)
   end
 end
