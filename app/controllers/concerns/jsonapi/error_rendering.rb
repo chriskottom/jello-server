@@ -16,7 +16,7 @@ module JSONAPI
     end
 
     def respond_with_validation_error(model, errors = nil)
-      render :unprocessable_entity, model
+      render_error :unprocessable_entity, model
     end
   end
 end

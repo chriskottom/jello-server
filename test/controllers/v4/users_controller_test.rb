@@ -1,6 +1,10 @@
 require 'test_helper'
 
 describe V4::UsersController do
+  include Serialization::JSONAPI::Assertions
+  include Serialization::JSONAPI::ControllerAssertions
+  include Serialization::JSONAPI::Helpers
+
   before do
     @user = users(:admin)
     @per_page = 3
@@ -15,26 +19,19 @@ describe V4::UsersController do
           as: :json
 
       assert_response :ok
-      assert_equal 'application/json', response.content_type
+      assert_jsonapi_content_type
 
-      response_users = json_response['users']
       assert_instance_of Array, response_users
       assert_equal @per_page, response_users.count
 
       response_ids = response_users.map { |u| u['id'] }
-      assert_equal @expected_users.ids.sort, response_ids.sort
+      assert_ids @expected_users.ids, response_users, 'id'
 
-      expected_keys = %w( id email gravatar_url admin created_at updated_at links )
-      assert_ids @expected_users.pluck(:id), response_users, 'id'
+      expected_keys = %w( id type attributes relationships links )
+      assert_keys expected_keys, response_users.first
 
-      user_count = User.count
-      response_meta = json_response.dig('meta')
-      assert_equal page, response_meta['current_page']
-      assert_equal page+1, response_meta['next_page']
-      assert_nil response_meta['prev_page']
-      assert_equal user_count, response_meta['total_count']
-      assert_equal (user_count.to_f / @per_page.to_f).ceil,
-                   response_meta['total_pages']
+      response_links = json_response.dig('links')
+      assert_keys %w( self next last ), response_links
     end
 
     it 'should paginate the fetched Users' do
@@ -44,16 +41,10 @@ describe V4::UsersController do
           headers: auth_headers(user: @user),
           as: :json
 
-      response_users = json_response['users']
-      assert_ids @expected_users.pluck(:id), response_users, 'id'
+      assert_ids @expected_users.ids, response_users, 'id'
 
-      expected_keys = %w( id email gravatar_url admin created_at updated_at links )
-      assert_keys expected_keys, response_users.first
-
-      response_meta = json_response.dig('meta')
-      assert_equal page, response_meta['current_page']
-      assert_equal page+1, response_meta['next_page']
-      assert_equal page-1, response_meta['prev_page']
+      response_links = json_response.dig('links')
+      assert_keys %w( self next last first prev ), response_links
     end
 
     describe 'with a bad access token' do
@@ -77,22 +68,19 @@ describe V4::UsersController do
       get v4_user_url(@user), headers: auth_headers(user: @user), as: :json
       assert_response :ok
 
-      expected_keys = %w( id email gravatar_url admin created_at updated_at links
-                          active_boards )
+      expected_keys = %w( id type attributes relationships links)
       assert_keys expected_keys, response_user
 
-      assert_equal @user.id, response_user['id']
-      assert_equal @user.email, response_user['email']
-      assert_equal @user.gravatar_url, response_user['gravatar_url']
+      assert_equal @user.id.to_s, response_user['id']
+      assert_equal @user.email, response_user.dig('attributes', 'email')
+      assert_equal @user.gravatar_url, response_user.dig('attributes', 'gravatar-url')
 
-      self_link = { 'rel' => 'self', 'href' => v4_user_url(@user) }
-      assert_link self_link, response_user, 'links'
+      assert_equal v4_user_url(@user), json_response.dig('data', 'links', 'self')
 
-      boards_link = { 'rel' => 'boards', 'href' => v4_user_boards_url(@user) }
-      assert_link boards_link, response_user, 'links'
-
-      board_ids = @user.boards.where(archived: [false, nil]).pluck(:id)
-      assert_ids board_ids, response_user['active_boards'], 'id'
+      expected_board_ids = @user.boards.where(archived: [false, nil]).ids
+      actual_boards = json_response.dig('data', 'relationships', 'active-boards', 'data')
+      actual_board_ids = actual_boards.map { |b| b['id'] }
+      assert_equal expected_board_ids.map(&:to_s).sort, actual_board_ids.sort
     end
 
     describe 'when :id is unknown' do
@@ -120,14 +108,13 @@ describe V4::UsersController do
 
       assert_response :created
 
-      expected_keys = %w( id email gravatar_url admin created_at updated_at
-                          links active_boards archived_boards )
+      expected_keys = %w( id type attributes relationships links )
       assert_keys expected_keys, response_user
 
-      assert_equal user_attributes[:email], response_user['email']
-      refute_nil response_user['gravatar_url']
+      assert_equal user_attributes[:email], response_user.dig('attributes', 'email')
+      refute_nil response_user.dig('attributes', 'gravatar-url')
 
-      assert_empty response_user['active_boards']
+      assert_empty response_user.dig('relationships', 'active-boards', 'data')
     end
 
     describe 'with invalid User attributes' do
@@ -161,8 +148,8 @@ describe V4::UsersController do
             as: :json
       assert_response :ok
 
-      assert_equal user_attributes[:email], response_user['email']
-      assert_equal update_time.as_json, response_user['updated_at']
+      assert_equal user_attributes[:email], response_user.dig('attributes', 'email')
+      assert_equal update_time.as_json, response_user.dig('attributes', 'updated-at')
 
       travel_back
     end
@@ -222,7 +209,11 @@ describe V4::UsersController do
 
   private
 
+  def response_users
+    json_response['data']
+  end
+
   def response_user
-    json_response['user']
+    json_response['data']
   end
 end
